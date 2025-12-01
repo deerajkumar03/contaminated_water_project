@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}WaterCheck AI System{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Water Palette */
+            --primary-color: #0284c7; /* Ocean Blue */
+            --secondary-color: #38bdf8; /* Light Sky */
+            --accent-color: #0c4a6e; /* Deep Depth */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            /* Subtle water gradient background */
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Glassmorphism Navbar --- */
+        nav {
+            width: 100%;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            
+            /* The Glass Effect */
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo i {
+            color: var(--secondary-color);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #64748b;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* Water droplet underline effect */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 3px;
+            bottom: -5px;
+            left: 0;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .admin-badge {
+            background: #1e293b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1; /* Pushes footer down */
+            padding: 40px 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: white;
+            color: #64748b;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* --- Messages --- */
+        .message-box {
+            max-width: 800px;
+            margin: 20px auto 0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .msg-success {
+            background: #ecfdf5;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .msg-error {
+            background: #fef2f2;
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-logo">
+        <i class="fa-solid fa-droplet"></i> WaterCheck
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="nav-right">
+        
+        <a href="{% url 'main:home' %}" class="nav-link">
+            <i class="fa-solid fa-house"></i> Home
+        </a>
+        <a href="{% url 'main:predict' %}" class="nav-link">
+            <i class="fa-solid fa-microscope"></i> Predict
+        </a>
+        <a href="{% url 'main:history' %}" class="nav-link">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+        </a>
+
+        {% if user.is_superuser %}
+            <a href="{% url 'main:admin_verify' %}" class="admin-badge">
+                <i class="fa-solid fa-shield-halved"></i> Admin
+            </a>
+        {% endif %}
+
+        <div class="user-info">
+            <i class="fa-regular fa-circle-user"></i>
+            {{ user.username }}
+        </div>
+
+        <form method="post" action="{% url 'main:logout' %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">
+                Logout <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </form>
+
+    </div>
+    {% endif %}
+</nav>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message-box {% if message.tags == 'error' %}msg-error{% else %}msg-success{% endif %}">
+            <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    © 2025 WaterCheck AI • Protecting Water Quality
+</footer>
+
+</body>
+</html>

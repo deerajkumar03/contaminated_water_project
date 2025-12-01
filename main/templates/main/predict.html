@@ -1,0 +1,303 @@
+{% extends "main/base.html" %}
+{% block title %}Prediction Result | WaterCheck{% endblock %}
+
+{% block content %}
+<style>
+    /* === 1. Background & Layout === */
+    body {
+        /* UPDATED BACKGROUND: Scientific/Lab Bubbles */
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(6, 182, 212, 0.2)),
+                    url('https://images.unsplash.com/photo-1621451537084-482c73073a0f?q=80&w=1974&auto=format&fit=crop') !important;
+        background-size: cover !important;
+        background-attachment: fixed !important;
+        background-position: center !important;
+        min-height: 100vh;
+        color: white;
+    }
+
+    .predict-wrapper {
+        max-width: 1100px;
+        margin: 40px auto;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 30px;
+        align-items: start;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 850px) {
+        .predict-wrapper { grid-template-columns: 1fr; }
+    }
+
+    /* === 2. Glass Form Panel === */
+    .glass-panel {
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .panel-header {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #334155;
+        background: #0f172a;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 5px; /* Reduced to make room for error text */
+        transition: 0.3s;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Input Error State */
+    input.input-error {
+        border-color: #f87171;
+        box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2);
+    }
+
+    .error-text {
+        color: #f87171;
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+        display: none; /* Hidden by default */
+        font-weight: 600;
+    }
+
+    .analyze-btn {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        margin-top: 10px;
+    }
+
+    .analyze-btn:hover {
+        transform: translateY(-3px);
+    }
+
+    /* === 3. THE WATER DROP RESULT === */
+    .result-panel {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .water-drop {
+        width: 120px;
+        height: 120px;
+        border-radius: 0 50% 50% 50%;
+        transform: rotate(45deg);
+        margin: 20px auto 30px auto;
+        box-shadow: inset 10px 10px 20px rgba(255,255,255,0.2),
+                    10px 20px 30px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drop-icon {
+        transform: rotate(-45deg);
+        font-size: 3rem;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .drop-safe { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 0 30px rgba(74, 222, 128, 0.4); animation: pulseGreen 2s infinite; }
+    .drop-moderate { background: linear-gradient(135deg, #fbbf24, #d97706); box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); }
+    .drop-danger { background: linear-gradient(135deg, #f87171, #dc2626); box-shadow: 0 0 30px rgba(248, 113, 113, 0.4); animation: shake 0.5s ease-in-out; }
+
+    .result-text { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+
+    /* === 4. ACTION CARDS === */
+    .cards-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .action-card {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 12px;
+        text-align: left;
+        border-left: 4px solid #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .action-card strong { display: block; margin-bottom: 5px; font-size: 1rem; }
+    .card-safe { border-left-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
+    .card-mod { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
+    .card-danger { border-left-color: #f87171; background: rgba(248, 113, 113, 0.05); }
+
+    @keyframes popUp { from { opacity: 0; transform: scale(0.8) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes pulseGreen { 0% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.05); } 100% { transform: rotate(45deg) scale(1); } }
+    @keyframes shake { 0%, 100% { transform: rotate(45deg) translateX(0); } 25% { transform: rotate(45deg) translateX(-5px); } 75% { transform: rotate(45deg) translateX(5px); } }
+
+    .back-btn { margin-top: 25px; color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+    .back-btn:hover { color: white; text-decoration: underline; }
+</style>
+
+<div class="predict-wrapper">
+
+    <section class="glass-panel">
+        <div class="panel-header">
+            <i class="fa-solid fa-flask" style="color:#38bdf8;"></i> Water Analysis
+        </div>
+        
+        <form id="predictForm" method="post" action="{% url 'main:predict' %}" onsubmit="return validateForm()">
+            {% csrf_token %}
+            
+            <label>pH Level (0 - 14)</label>
+            <input type="number" step="0.1" id="ph_input" name="ph_value" 
+                   value="{{ ph_value }}" placeholder="Enter pH..." required
+                   min="0" max="14">
+            <div id="ph_error" class="error-text"><i class="fa-solid fa-circle-exclamation"></i> Invalid pH: Must be between 0 and 14</div>
+            
+            <label>TDS Value (0 - 1500 mg/L)</label>
+            <input type="number" id="tds_input" name="tds_value" 
+                   value="{{ tds_value }}" placeholder="Enter TDS..." required
+                   min="0" max="1500">
+            <div id="tds_error" class="error-text"><i class="fa-solid fa-circle-exclamation"></i> Invalid TDS: Must be between 0 and 1500</div>
+
+            <button type="submit" class="analyze-btn">Analyze Water</button>
+        </form>
+    </section>
+
+    {% if prediction_result %}
+    <section class="result-panel">
+        
+        {% if prediction_result == 'Safe' %}
+            <div class="water-drop drop-safe"><i class="fa-solid fa-check drop-icon"></i></div>
+            <div class="result-text" style="color:#4ade80">SAFE</div>
+            <p style="color:#cbd5e1">Water is potable.</p>
+            <div class="cards-container">
+                <div class="action-card card-safe">
+                    <strong style="color:#4ade80"><i class="fa-solid fa-glass-water"></i> Hydration</strong>
+                    Perfect for drinking.
+                </div>
+                <div class="action-card card-safe">
+                    <strong style="color:#4ade80"><i class="fa-solid fa-shield-heart"></i> Health</strong>
+                    Meets safety standards.
+                </div>
+            </div>
+
+        {% elif prediction_result == 'Moderate' %}
+            <div class="water-drop drop-moderate"><i class="fa-solid fa-exclamation drop-icon"></i></div>
+            <div class="result-text" style="color:#fbbf24">MODERATE</div>
+            <p style="color:#cbd5e1">Caution advised.</p>
+            <div class="cards-container">
+                <div class="action-card card-mod">
+                    <strong style="color:#fbbf24"><i class="fa-solid fa-temperature-arrow-up"></i> Action</strong>
+                    Boil before drinking.
+                </div>
+                <div class="action-card card-mod">
+                    <strong style="color:#fbbf24"><i class="fa-solid fa-filter"></i> Filter</strong>
+                    Basic filtration needed.
+                </div>
+            </div>
+
+        {% else %}
+            <div class="water-drop drop-danger"><i class="fa-solid fa-skull-crossbones drop-icon"></i></div>
+            <div class="result-text" style="color:#f87171">CONTAMINATED</div>
+            <p style="color:#cbd5e1">High risk detected.</p>
+            <div class="cards-container">
+                <div class="action-card card-danger">
+                    <strong style="color:#f87171"><i class="fa-solid fa-ban"></i> Warning</strong>
+                    Do not drink.
+                </div>
+                <div class="action-card card-danger">
+                    <strong style="color:#f87171"><i class="fa-solid fa-gears"></i> Treatment</strong>
+                    Requires RO or UV.
+                </div>
+            </div>
+        {% endif %}
+
+        <a href="{% url 'main:home' %}" class="back-btn">← Clear</a>
+
+    </section>
+    
+    {% else %}
+    <section class="glass-panel" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; opacity:0.6;">
+        <i class="fa-solid fa-magnifying-glass-chart" style="font-size:4rem; margin-bottom:20px; color:#38bdf8;"></i>
+        <h3>Ready to Scan</h3>
+        <p>Enter values to predict quality.</p>
+    </section>
+    {% endif %}
+
+</div>
+
+<script>
+function validateForm() {
+    let isValid = true;
+    
+    // Get Elements
+    const phInput = document.getElementById('ph_input');
+    const tdsInput = document.getElementById('tds_input');
+    const phError = document.getElementById('ph_error');
+    const tdsError = document.getElementById('tds_error');
+
+    // Reset styles
+    phInput.classList.remove('input-error');
+    tdsInput.classList.remove('input-error');
+    phError.style.display = 'none';
+    tdsError.style.display = 'none';
+
+    // Validate pH (0 - 14)
+    const phVal = parseFloat(phInput.value);
+    if (phVal < 0 || phVal > 14 || isNaN(phVal)) {
+        phInput.classList.add('input-error');
+        phError.style.display = 'block';
+        isValid = false;
+    }
+
+    // Validate TDS (0 - 1500)
+    const tdsVal = parseFloat(tdsInput.value);
+    if (tdsVal < 0 || tdsVal > 1500 || isNaN(tdsVal)) {
+        tdsInput.classList.add('input-error');
+        tdsError.style.display = 'block';
+        isValid = false;
+    }
+
+    return isValid; // Prevents form submission if false
+}
+</script>
+
+{% endblock %}

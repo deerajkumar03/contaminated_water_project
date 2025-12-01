@@ -1,0 +1,139 @@
+{% extends "main/base.html" %}
+{% block title %}Prediction History | WaterCheck{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(6,182,212,0.2)),
+                    url('https://images.unsplash.com/photo-1518611012118-f0c5e5d0bbf8?w=1974&auto=format&fit=crop');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    .history-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: rgba(15, 23, 42, 0.9);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        backdrop-filter: blur(10px);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #38bdf8;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 15px;
+    }
+
+    thead {
+        background: #0f172a;
+    }
+
+    thead th {
+        padding: 14px;
+        text-align: center;
+        font-size: 1rem;
+        color: #38bdf8;
+        border-bottom: 1px solid #1e293b;
+    }
+
+    tbody tr {
+        background: rgba(255,255,255,0.04);
+        transition: 0.3s;
+    }
+
+    tbody tr:hover {
+        background: rgba(255,255,255,0.08);
+    }
+
+    tbody td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #1e293b;
+    }
+
+    .safe { color: #4ade80; font-weight: bold; }
+    .moderate { color: #fbbf24; font-weight: bold; }
+    .danger { color: #f87171; font-weight: bold; }
+
+    .empty-msg {
+        text-align: center;
+        color: #94a3b8;
+        padding: 40px;
+        font-size: 1.2rem;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        color: #38bdf8;
+    }
+
+    .back-btn:hover {
+        color: white;
+        text-decoration: underline;
+    }
+</style>
+
+
+<div class="history-container">
+
+    <h2><i class="fa-solid fa-clock-rotate-left"></i> Prediction History</h2>
+
+    {% if history %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>pH</th>
+                <th>TDS</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for h in history %}
+            <tr>
+                <td>{{ h.prediction_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ h.ph_input }}</td>
+                <td>{{ h.tds_input }}</td>
+                <td>
+                    {% if h.result == "Safe" %}
+                        <span class="safe">SAFE</span>
+                    {% elif h.result == "Moderate" %}
+                        <span class="moderate">MODERATE</span>
+                    {% else %}
+                        <span class="danger">CONTAMINATED</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+        <div class="empty-msg">
+            <i class="fa-solid fa-folder-open" style="font-size: 2rem;"></i><br><br>
+            No predictions recorded yet.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'main:predict' %}" class="back-btn">← Back to Prediction</a>
+
+</div>
+
+{% endblock %}

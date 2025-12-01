@@ -1,0 +1,39 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.pdb
+
+# Django stuff
+db.sqlite3
+*.log
+staticfiles/
+
+# Environment
+env/
+venv/
+ENV/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# ML models backups or unwanted
+*.pkl
+*.sav
+*.h5
+*.onnx
+
+# BUT DO NOT ignore your production model
+!waterproj/ml_models/random_forest_model.joblib
+
+# Compiled
+*.so

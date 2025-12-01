@@ -1,0 +1,239 @@
+{% extends "main/base.html" %}
+{% block title %}Register | WaterCheck{% endblock %}
+
+{% block content %}
+<style>
+    .register-wrapper {
+        /* UPDATED BACKGROUND: Deep Underwater Mystery */
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(8, 145, 178, 0.3)),
+                    url('https://images.unsplash.com/photo-1566024287286-457247b70310?q=80&w=2072&auto=format&fit=crop');
+        
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        /* Fit nicely in base template */
+        min-height: 85vh;
+        width: 100%;
+        margin: 0;
+        border-radius: 20px;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 480px;
+        
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        
+        padding: 35px;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        animation: fadeUp 0.6s ease-out;
+        color: white;
+    }
+
+    .register-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-align: center;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .register-desc {
+        font-size: 0.9rem;
+        color: #e0f2fe;
+        margin-bottom: 25px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        color: #e0f2fe;
+    }
+    
+    label i { margin-right: 6px; color: #67e8f9; }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.4);
+        font-size: 0.95rem;
+        font-family: 'Poppins', sans-serif;
+        
+        background: rgba(255, 255, 255, 0.9);
+        color: #0f172a;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #67e8f9;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.3);
+    }
+
+    .strength-text {
+        font-size: 0.85rem;
+        margin-top: 8px;
+        font-weight: 600;
+        text-align: right;
+        min-height: 20px;
+    }
+
+    .weak { color: #fca5a5; }     
+    .moderate { color: #fdba74; } 
+    .strong { color: #86efac; }   
+
+    .hint {
+        font-size: 0.75rem;
+        color: #cbd5e1;
+        margin-top: 4px;
+    }
+
+    .register-btn {
+        width: 100%;
+        margin-top: 15px;
+        padding: 14px;
+        border-radius: 99px;
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        transition: all 0.3s;
+    }
+
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6);
+    }
+
+    .register-footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #e0f2fe;
+    }
+    
+    .register-footer a {
+         color: #67e8f9;
+         text-decoration: none;
+         font-weight: 600;
+    }
+    
+    .register-footer a:hover { color: white; text-decoration: underline;}
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-card">
+
+        <div class="register-title">Create Account</div>
+        <div class="register-desc">
+            Join WaterCheck today to predict water safety.
+        </div>
+
+        <form method="post" id="registerForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-user"></i> Username</label>
+                <input type="text" name="username" id="username" placeholder="Choose a username" required>
+                <div class="hint">Only letters, numbers & underscore allowed.</div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-lock"></i> Password</label>
+                <input type="password" name="password1" id="password" placeholder="Create a strong password" required onkeyup="checkStrength()">
+                
+                <div id="strengthMsg" class="strength-text"></div>
+                <div class="hint">
+                    Min 8 chars, mixed case, numbers & symbols.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-check-double"></i> Confirm Password</label>
+                <input type="password" name="password2" id="confirmPassword" placeholder="Repeat password" required>
+            </div>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+
+        <div class="register-footer">
+            Already have an account? 
+            <a href="{% url 'main:login' %}">Login</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function checkStrength() {
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("strengthMsg");
+
+    let strength = 0;
+
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    if (password.length === 0) {
+        msg.innerHTML = "";
+        msg.className = "strength-text";
+        return;
+    }
+
+    if (strength <= 2) {
+        msg.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Weak Password";
+        msg.className = "strength-text weak";
+    } 
+    else if (strength === 3 || strength === 4) {
+        msg.innerHTML = "<i class='fa-solid fa-circle-check'></i> Moderate Password";
+        msg.className = "strength-text moderate";
+    } 
+    else {
+        msg.innerHTML = "<i class='fa-solid fa-shield-halved'></i> Strong Password";
+        msg.className = "strength-text strong";
+    }
+}
+
+document.getElementById("registerForm").onsubmit = function() {
+    const p1 = document.getElementById("password").value;
+    const p2 = document.getElementById("confirmPassword").value;
+
+    if (p1 !== p2) {
+        alert("Passwords do not match!");
+        return false;
+    }
+    return true;
+};
+</script>
+
+{% endblock %}
