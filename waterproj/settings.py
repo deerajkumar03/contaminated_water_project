@@ -3,13 +3,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-REPLACE_WITH_REAL_SECRET"
+# Checks for an environment variable on Render, otherwise uses the insecure default
+SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-REPLACE_WITH_REAL_SECRET")
 
-# Set to False in production
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+# This automatically disables DEBUG when running on Render
+DEBUG = 'RENDER' not in os.environ
 
-# Render requires wildcard host
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -53,6 +57,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "waterproj.wsgi.application"
 
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -60,6 +66,8 @@ DATABASES = {
     }
 }
 
+# Password validation
+# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -75,20 +83,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# ---------------- STATIC FILES (IMPORTANT FOR DEPLOYMENT) ---------------- #
+# ---------------- STATIC FILES (CRITICAL FOR DEPLOYMENT) ---------------- #
 
 STATIC_URL = "/static/"
 
 # Folder where Render/Railway will collect all static assets
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# DO NOT use STATICFILES_DIRS because your static files are inside "main/static/"
-# Django auto-detects app-level static folders correctly
 
 # Enable WhiteNoise for optimized static file serving
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
