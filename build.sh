@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Force Render to use Python 3.12.1
-echo "3.12.1" > .python-version
+# Use Python 3.10 on Render (works with scikit-learn 1.2.2)
+echo "3.10.12" > .python-version
 
 # Upgrade pip
 pip install --upgrade pip
