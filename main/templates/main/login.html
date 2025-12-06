@@ -3,158 +3,182 @@
 
 {% block content %}
 <style>
-    /* 1. Full Screen Background Setup */
-    .login-page-wrapper {
-        /* UPDATED BACKGROUND: Deep Underwater Mystery */
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(8, 145, 178, 0.3)),
-                    url('https://images.unsplash.com/photo-1566024287286-457247b70310?q=80&w=2072&auto=format&fit=crop');
-        
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        
-        min-height: 80vh; 
-        width: 100%;
-        border-radius: 20px;
-        
-        display: flex;
-        align-items: center;     
-        justify-content: center; 
-    }
+/* ==== PAGE BACKGROUND ==== */
+.login-wrapper {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(8, 145, 178, 0.35)),
+                url('https://images.unsplash.com/photo-1566024287286-457247b70310?q=80&w=2072&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    min-height: 85vh;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
 
-    /* 2. Glass Card Styling */
-    .auth-card {
-        background: rgba(255, 255, 255, 0.1); 
-        backdrop-filter: blur(20px);         
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        
-        width: 100%;
-        max-width: 420px;
-        padding: 40px 35px;
-        border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        animation: authFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-        color: white;
-    }
+/* ==== GLASS CARD ==== */
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 24px;
+    padding: 42px 36px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    animation: fadeUp 0.6s ease-out;
+    color: white;
+}
 
-    .auth-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #ffffff;
-        text-align: center;
-        margin-bottom: 5px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+/* TEXT */
+.login-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+.login-sub {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #dbeafe;
+    margin-bottom: 25px;
+}
 
-    .auth-sub {
-        font-size: 0.95rem;
-        color: #e0f2fe; 
-        text-align: center;
-        margin-bottom: 30px;
-        font-weight: 300;
-    }
+/* INPUTS */
+.form-group { margin-bottom: 20px; }
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #dbeafe;
+    margin-bottom: 8px;
+    display: block;
+}
+input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255,255,255,0.92);
+    color: #0f172a;
+    padding-right: 48px;
+}
+input:focus {
+    outline: none;
+    border-color: #67e8f9;
+    box-shadow: 0 0 0 4px rgba(103,232,249,0.25);
+}
 
-    .form-group { margin-bottom: 20px; }
+/* PASSWORD TOGGLE */
+.password-wrapper { position: relative; }
+.password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.15rem;
+    cursor: pointer;
+    color: #94a3b8;
+}
+.password-toggle:hover { color: #38bdf8; }
 
-    label {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #e0f2fe;
-        margin-bottom: 8px;
-        display: block;
-    }
-    
-    label i { margin-right: 5px; color: #67e8f9; }
+/* BUTTON */
+.login-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 99px;
+    border: none;
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.login-btn:hover {
+    transform: translateY(-2px);
+}
 
-    input {
-        width: 100%;
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        font-size: 0.95rem;
-        background-color: rgba(255, 255, 255, 0.9); 
-        color: #0f172a;
-        transition: all 0.3s;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-    
-    input:focus {
-        outline: none;
-        border-color: #67e8f9;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(103, 232, 249, 0.3);
-    }
+/* FOOTER */
+.login-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #dbeafe;
+}
+.login-footer a {
+    color: #67e8f9;
+    text-decoration: none;
+}
+.login-footer a:hover {
+    text-decoration: underline;
+}
 
-    .auth-btn {
-        width: 100%;
-        padding: 15px;
-        border-radius: 99px;
-        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-        border: none;
-        color: white;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        margin-top: 15px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
-    }
-    
-    .auth-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6);
-    }
-
-    .auth-footer {
-        margin-top: 25px;
-        font-size: 0.9rem;
-        text-align: center;
-        color: #e0f2fe;
-    }
-
-    .auth-footer a {
-        color: #67e8f9;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.2s;
-    }
-    
-    .auth-footer a:hover { color: #fff; text-decoration: underline; }
-
-    @keyframes authFade {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+/* ANIMATION */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 
-<div class="login-page-wrapper">
-    <div class="auth-card">
-        <div class="auth-title">Welcome Back</div>
-        <div class="auth-sub">
-            Login to access your<br>water quality dashboard.
-        </div>
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-title">Welcome Back</div>
+        <div class="login-sub">Log in to access your WaterCheck dashboard.</div>
 
         <form method="post">
             {% csrf_token %}
 
+            <!-- USERNAME -->
             <div class="form-group">
                 <label><i class="fa-solid fa-user"></i> Username</label>
                 <input type="text" name="username" placeholder="Enter your username" required>
             </div>
 
+            <!-- PASSWORD (ONLY ONE FIELD) -->
             <div class="form-group">
                 <label><i class="fa-solid fa-lock"></i> Password</label>
-                <input type="password" name="password" placeholder="••••••••••" required>
+                <div class="password-wrapper">
+                    <input type="password" 
+                           name="password"
+                           id="passwordInput"
+                           placeholder="Enter your password"
+                           required>
+
+                    <i class="fa-solid fa-eye-slash password-toggle" id="togglePassword"></i>
+                </div>
             </div>
 
-            <button type="submit" class="auth-btn">Log In</button>
+            <!-- FORGOT PASSWORD LINK -->
+            <div style="text-align:right; margin-top:-8px; margin-bottom:15px;">
+                <a href="{% url 'main:forgot_password' %}" 
+                   style="color:#67e8f9; font-weight:600; font-size:0.85rem;">
+                    Forgot Password?
+                </a>
+            </div>
+
+            <!-- LOGIN BUTTON -->
+            <button type="submit" class="login-btn">Log In</button>
         </form>
 
-        <div class="auth-footer">
+        <div class="login-footer">
             New here? <a href="{% url 'main:register' %}">Create an Account</a>
         </div>
+
     </div>
 </div>
+
+<script>
+// === Password Toggle Script ===
+const pwdInput = document.getElementById("passwordInput");
+const toggleBtn = document.getElementById("togglePassword");
+
+toggleBtn.addEventListener("click", () => {
+    const isHidden = pwdInput.type === "password";
+
+    pwdInput.type = isHidden ? "text" : "password";
+    toggleBtn.classList.toggle("fa-eye");
+    toggleBtn.classList.toggle("fa-eye-slash");
+
+    toggleBtn.style.color = isHidden ? "#38bdf8" : "#94a3b8";
+});
+</script>
+
 {% endblock %}

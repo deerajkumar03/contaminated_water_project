@@ -6,15 +6,15 @@
 
     <title>{% block title %}WaterCheck AI System{% endblock %}</title>
 
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            /* Water Palette */
-            --primary-color: #0284c7; /* Ocean Blue */
-            --secondary-color: #38bdf8; /* Light Sky */
-            --accent-color: #0c4a6e; /* Deep Depth */
+            --primary-color: #0284c7; 
+            --secondary-color: #38bdf8;
+            --accent-color: #0c4a6e;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 0.5);
             --danger: #ef4444;
@@ -29,7 +29,6 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            /* Subtle water gradient background */
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             color: #334155;
             min-height: 100vh;
@@ -37,7 +36,7 @@
             flex-direction: column;
         }
 
-        /* --- Glassmorphism Navbar --- */
+        /* NAVBAR */
         nav {
             width: 100%;
             padding: 15px 5%;
@@ -47,11 +46,8 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            
-            /* The Glass Effect */
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--glass-border);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
         }
@@ -59,10 +55,10 @@
         .nav-logo {
             font-size: 1.5rem;
             font-weight: 600;
-            color: var(--primary-color);
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--primary-color);
         }
 
         .nav-logo i {
@@ -87,7 +83,6 @@
             color: var(--primary-color);
         }
 
-        /* Water droplet underline effect */
         .nav-link::after {
             content: '';
             position: absolute;
@@ -102,16 +97,6 @@
 
         .nav-link:hover::after {
             width: 100%;
-        }
-
-        .admin-badge {
-            background: #1e293b;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            text-decoration: none;
-            letter-spacing: 0.5px;
         }
 
         .user-info {
@@ -140,16 +125,14 @@
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
         }
 
-        /* --- Main Content --- */
         main {
-            flex: 1; /* Pushes footer down */
+            flex: 1;
             padding: 40px 20px;
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
         }
 
-        /* --- Footer --- */
         footer {
             background: white;
             color: #64748b;
@@ -159,7 +142,7 @@
             border-top: 1px solid #e2e8f0;
         }
 
-        /* --- Messages --- */
+        /* Django Messages */
         .message-box {
             max-width: 800px;
             margin: 20px auto 0;
@@ -184,6 +167,7 @@
         }
     </style>
 </head>
+
 <body>
 
 <nav>
@@ -193,22 +177,18 @@
 
     {% if user.is_authenticated %}
     <div class="nav-right">
-        
+
         <a href="{% url 'main:home' %}" class="nav-link">
             <i class="fa-solid fa-house"></i> Home
         </a>
+
         <a href="{% url 'main:predict' %}" class="nav-link">
             <i class="fa-solid fa-microscope"></i> Predict
         </a>
+
         <a href="{% url 'main:history' %}" class="nav-link">
             <i class="fa-solid fa-clock-rotate-left"></i> History
         </a>
-
-        {% if user.is_superuser %}
-            <a href="{% url 'main:admin_verify' %}" class="admin-badge">
-                <i class="fa-solid fa-shield-halved"></i> Admin
-            </a>
-        {% endif %}
 
         <div class="user-info">
             <i class="fa-regular fa-circle-user"></i>

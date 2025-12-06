@@ -1,21 +1,19 @@
 import os
 from pathlib import Path
 
+# PATHS
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# SECURITY
+SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-temp-secret-key")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Checks for an environment variable on Render, otherwise uses the insecure default
-SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-REPLACE_WITH_REAL_SECRET")
+# DEBUG = False on Render, True locally
+DEBUG = not os.environ.get("RENDER")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# This automatically disables DEBUG when running on Render
-DEBUG = 'RENDER' not in os.environ
+# Hosts
+ALLOWED_HOSTS = ["*"] if os.environ.get("RENDER") else []
 
-ALLOWED_HOSTS = ["*"]
-
+# INSTALLED APPS
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -26,9 +24,16 @@ INSTALLED_APPS = [
     "main",
 ]
 
+# MIDDLEWARE
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",   # Required for Render static files
+]
+
+# Whitenoise only in production
+if os.environ.get("RENDER"):
+    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMiddleware")
+
+MIDDLEWARE += [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -37,12 +42,23 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# URL + WSGI
 ROOT_URLCONF = "waterproj.urls"
+WSGI_APPLICATION = "waterproj.wsgi.application"
 
+# DATABASE (SQLite for both local + Render)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+# TEMPLATES
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # Templates are inside app folders
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -55,50 +71,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "waterproj.wsgi.application"
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# AUTH VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Internationalization
+# I18N
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-# ---------------- STATIC FILES (CRITICAL FOR DEPLOYMENT) ---------------- #
-
+# STATIC FILES
 STATIC_URL = "/static/"
 
-# Folder where Render/Railway will collect all static assets
-STATIC_ROOT = BASE_DIR / "staticfiles"
+if os.environ.get("RENDER"):
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+else:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Enable WhiteNoise for optimized static file serving
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# -------------------------------------------------------------------------- #
+# MODEL PATH
+ML_MODEL_PATH = BASE_DIR / "waterproj" / "ml_models" / "random_forest_model.joblib"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
