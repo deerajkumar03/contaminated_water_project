@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
+set -o errexit
 
-# Upgrade pip
+echo "Using Python runtime file:"
+cat runtime.txt
+
 pip install --upgrade pip
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Collect static files
-python manage.py collectstatic --noinput
