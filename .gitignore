@@ -1,39 +1,26 @@
 # Python
-*.pyc
 __pycache__/
-*.pyo
-*.pyd
-*.pdb
+*.pyc
 
-# Django stuff
-db.sqlite3
-*.log
+# Django
+*.sqlite3
 staticfiles/
+*.log
 
 # Environment
+.env
 env/
 venv/
-ENV/
 .venv/
 
-# OS files
-.DS_Store
-Thumbs.db
+# Data & training artifacts (do NOT commit raw data)
+data/
+models/
 
-# VS Code
+# IDE junk
 .vscode/
-
-# PyCharm
 .idea/
 
-# ML models backups or unwanted
-*.pkl
-*.sav
-*.h5
-*.onnx
-
-# BUT DO NOT ignore your production model
-!waterproj/ml_models/random_forest_model.joblib
-
-# Compiled
-*.so
+# OS junk
+.DS_Store
+Thumbs.db
