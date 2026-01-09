@@ -25,8 +25,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -37,7 +37,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "waterproj.urls"
 WSGI_APPLICATION = "waterproj.wsgi.application"
 
-# DATABASE (safe for Render ephemeral FS)
+# DATABASE (Render safe)
 if os.environ.get("RENDER"):
     DATABASES = {
         "default": {
@@ -81,12 +81,28 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
+# STATIC
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 if not os.environ.get("RENDER"):
     STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "https://contaminated-water-project-u533.onrender.com",
+]
+
+# SESSION (Render safe)
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    }
+}
 
 ML_MODEL_PATH = BASE_DIR / "waterproj" / "ml_models" / "random_forest_model.joblib"
 
