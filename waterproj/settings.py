@@ -5,7 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-temp-secret-key")
 
-DEBUG = not os.environ.get("RENDER")
+# Better DEBUG control
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -25,8 +26,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -37,7 +38,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "waterproj.urls"
 WSGI_APPLICATION = "waterproj.wsgi.application"
 
-# DATABASE (Render safe)
+# DATABASE
 if os.environ.get("RENDER"):
     DATABASES = {
         "default": {
@@ -81,20 +82,23 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-# STATIC
+# STATIC FILES
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 if not os.environ.get("RENDER"):
     STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# CSRF
+# SECURITY FOR RENDER
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 CSRF_TRUSTED_ORIGINS = [
     "https://contaminated-water-project-u533.onrender.com",
 ]
 
-# SESSION (Render safe)
+# SESSION
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
@@ -104,6 +108,7 @@ CACHES = {
     }
 }
 
+# ML MODEL PATH (OK)
 ML_MODEL_PATH = BASE_DIR / "waterproj" / "ml_models" / "random_forest_model.joblib"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
