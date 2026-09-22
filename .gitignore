@@ -24,3 +24,6 @@ models/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Unused folders
+scheduler-backend/
